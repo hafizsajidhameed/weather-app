@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <style>
+      * {
+        font-family: "poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #2f3c39;
+      }
+
+      .card {
+        width: 90%;
+        max-width: 470px;
+        background: linear-gradient(135deg, #00e0fe, #a3479d);
+        color: #fff;
+        margin: 10px auto 0;
+        padding: 40px 35px;
+        border-radius: 20px;
+        text-align: center;
+      }
+      .search {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        background: #eaffbc;
+        color: #555;
+        padding: 10px 25px;
+        height: 60px;
+        border-radius: 30px;
+        flex: 1;
+        margin-right: 16px;
+        font-size: 18px;
+      }
+      .search button {
+        border: 0;
+        outline: 0;
+        background: #eaffbc;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        cursor: pointer;
+      }
+      .search button img {
+        width: 16px;
+      }
+      .weather-icon {
+        width: 170px;
+        margin-top: 10px;
+      }
+      .weather h1 {
+        font-size: 80px;
+        font-weight: 500;
+      }
+      .weather h2 {
+        font-size: 45px;
+        font-weight: 400;
+        margin-top: -10px;
+      }
+      .details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        margin-top: 50px;
+      }
+      .col {
+        display: flex;
+        align-items: center;
+        text-align: left;
+      }
+      .col img {
+        width: 40px;
+        margin: 10px;
+      }
+      .humidity,
+      .wind {
+        font-size: 28px;
+        margin-top: 6px;
+      }
+      .date-time {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 30px;
+        margin-bottom: 20px;
+      }
+      #loader {
+        border: 6px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 6px solid #3498db;
+        width: 80px;
+        height: 80px;
+        /* -webkit-animation: spin 2s linear infinite */
+        margin: 30px auto;
+        animation: spin 2s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      #loader {
+        display: none;
+      }
+      #loader.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="search">
+        <input
+          type="text"
+          placeholder="enter city name"
+          spellcheck="false"
+          autofocus
+        />
+        <button><img src="weather-app-img/images/search.png" alt="" /></button>
+      </div>
+      <div class="date-time">
+        <div class="current-time"></div>
+        <div class="current-date">393939</div>
+      </div>
+
+      <div id="loader"></div>
+      <div class="weather">
+        <img src="weather-app-img/images/clear.png" class="weather-icon" />
+        <h1 class="temp">22°C</h1>
+        <h2 class="city">New York</h2>
+
+        <div class="details">
+          <div class="col">
+            <img src="weather-app-img/images/humidity.png" alt="" />
+            <div>
+              <p class="humidity">50%</p>
+              <p>Humidity</p>
+            </div>
+          </div>
+          <div class="col">
+            <img src="weather-app-img/images/wind.png" alt="" />
+            <div>
+              <p class="wind">15 km/h</p>
+              <p>Wind</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        const addLoader = document.getElementById("loader");
+
+        function showLoader() {
+          addLoader.classList.add("show");
+          // document.querySelector('.weather-icon').style.display = 'none';
+          document.querySelector(".temp").style.display = "none";
+          // document.querySelector('.city').style.display = 'none';
+        }
+
+        function hideLoader() {
+          addLoader.classList.remove("show");
+          // document.querySelector('.weather-icon').style.display = 'block';
+          document.querySelector(".temp").style.display = "block";
+          // document.querySelector('.city').style.display = 'block';
+        }
+
+        const apiKey = "5b18c9d82f998e9226fdd02aa25253eb";
+        const apiUrl =
+          "https://api.openweathermap.org/data/2.5/weather?units=metric&";
+
+        const searchBox = document.querySelector(".search input");
+        const searchBtn = document.querySelector(".search button");
+
+        async function checkWeather(city) {
+          showLoader();
+          const response = await fetch(`${apiUrl}q=${city}&appid=${apiKey}`);
+
+          // // Given data
+
+          //     // Extract sunrise and sunset timestamps and timezone offset
+          //     const sunriseTimestamp = data.sys.sunrise;
+          //     const sunsetTimestamp = data.sys.sunset;
+          //     const timezoneOffsetSeconds = data.timezone;
+
+          //     // Adjust for timezone offset and decrease one hour
+          //     const adjustedSunriseTimestamp = sunriseTimestamp + timezoneOffsetSeconds - 3600;
+          //     const adjustedSunsetTimestamp = sunsetTimestamp + timezoneOffsetSeconds - 3600;
+
+          //     // Convert to human-readable time
+          //     const adjustedSunriseDate = new Date(adjustedSunriseTimestamp * 1000);
+          //     const adjustedSunsetDate = new Date(adjustedSunsetTimestamp * 1000);
+
+          //     // Get the current time
+          //     let d = new Date();
+
+          //     // Check if it's after sunset
+          //     if (d > adjustedSunsetDate) {
+          //     document.querySelector('.card').style.backgroundColor = 'darkblue';
+          //     } else {
+          //     // It's before sunset
+          //     document.querySelector('.card').style.backgroundColor = 'lightblue';
+          //     }
+
+          if (response.status == 404) {
+            hideLoader();
+            document.querySelector(".city").innerHTML = "Invalid City";
+            // document.querySelector('.weather-icon').style.display = 'none';
+            document.querySelector(".temp").style.display = "none";
+          } else {
+            var data = await response.json();
+
+            hideLoader();
+            // console.log(data);
+            document.querySelector(".city").innerHTML = data.name;
+            document.querySelector(".temp").innerHTML =
+              Math.round(data.main.temp) + "°C";
+            document.querySelector(".humidity").innerHTML =
+              data.main.humidity + "%";
+            document.querySelector(".wind").innerHTML =
+              data.wind.speed + "km/h";
+
+            const weatherImg = document.querySelector(".weather-icon");
+            // document.querySelector('.weather-icon').style.display = 'block';
+            document.querySelector(".temp").style.display = "block";
+
+            if (data.weather[0].main == "Clear") {
+              weatherImg.src = "weather-app-img/images/clear.png";
+            } else if (data.weather[0].main == "Clouds") {
+              weatherImg.src = "weather-app-img/images/clouds.png";
+            } else if (data.weather[0].main == "Drizzle") {
+              weatherImg.src = "weather-app-img/images/drizzle.png";
+            } else if (data.weather[0].main == "Humidity") {
+              weatherImg.src = "weather-app-img/images/humidity.png";
+            } else if (data.weather[0].main == "Mist") {
+              weatherImg.src = "weather-app-img/images/mist.png";
+            } else if (data.weather[0].main == "Rain") {
+              weatherImg.src = "weather-app-img/images/rain.png";
+            } else if (data.weather[0].main == "Snow") {
+              weatherImg.src = "weather-app-img/images/snow.png";
+            } else if (data.weather[0].main == "Wind") {
+              weatherImg.src = "weather-app-img/images/Wind.png";
+            } else if (data.weather[0].main == "Smoke") {
+              weatherImg.src = "weather-app-img/images/smoke.png";
+            }
+          }
+        }
+        searchBtn.addEventListener("click", () => {
+          checkWeather(searchBox.value);
+          searchBox.value = "";
+          document.querySelector(".search", "button").disabled = true;
+
+          document.querySelector(".search", "input").onkeyup = function () {
+            if (document.querySelector(".search", "input").value.length > 0) {
+              document.querySelector(".search", "button").disabled = false;
+            } else {
+              document.querySelector(".search", "button").disabled = true;
+            }
+          };
+        });
+
+        var input = document.getElementById("myInput");
+
+        // Execute a function when the user presses a key on the keyboard
+        searchBox.addEventListener("keypress", function (event) {
+          // If the user presses the "Enter" key on the keyboard
+          if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            searchBtn.click();
+          }
+        });
+        // time
+        let time = document.querySelector(".current-time");
+
+        setInterval(() => {
+          const d = new Date();
+
+          time.innerHTML = d.toLocaleTimeString();
+        }, 1000);
+        // day date month
+        const currentDate = document.querySelector(".current-date");
+        const d = new Date();
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        const months = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          ,
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        for (let i = 0; i < months.length; i++) {
+          let dayName = days[d.getDay()];
+          let dayNum = d.getDate();
+          let month = months[d.getMonth() + 1];
+
+          currentDate.innerHTML = `${dayName}  ${dayNum} ${month}`;
+        }
+        // defaultPreview
+        document.addEventListener("DOMContentLoaded", function () {
+          let lahore =
+            "https://api.openweathermap.org/data/2.5/weather?q=lahore&units=metric&appid=5b18c9d82f998e9226fdd02aa25253eb";
+
+          async function Lahore() {
+            showLoader();
+            const response = await fetch(`${lahore}`);
+            hideLoader();
+            var data = await response.json();
+
+            // console.log(data);
+            document.querySelector(".city").innerHTML = data.name;
+            document.querySelector(".temp").innerHTML =
+              Math.round(data.main.temp) + "°C";
+            document.querySelector(".humidity").innerHTML =
+              data.main.humidity + "%";
+            document.querySelector(".wind").innerHTML =
+              data.wind.speed + "km/h";
+
+            const weatherImg = document.querySelector(".weather-icon");
+
+            if (data.weather[0].main == "Clear") {
+              weatherImg.src = "weather-app-img/images/clear.png";
+            } else if (data.weather[0].main == "Clouds") {
+              weatherImg.src = "weather-app-img/images/clouds.png";
+            } else if (data.weather[0].main == "Drizzle") {
+              weatherImg.src = "weather-app-img/images/drizzle.png";
+            } else if (data.weather[0].main == "Humidity") {
+              weatherImg.src = "weather-app-img/images/humidity.png";
+            } else if (data.weather[0].main == "Mist") {
+              weatherImg.src = "weather-app-img/images/mist.png";
+            } else if (data.weather[0].main == "Rain") {
+              weatherImg.src = "weather-app-img/images/rain.png";
+            } else if (data.weather[0].main == "Snow") {
+              weatherImg.src = "weather-app-img/images/snow.png";
+            } else if (data.weather[0].main == "Wind") {
+              weatherImg.src = "weather-app-img/images/Wind.png";
+            } else if (data.weather[0].main == "Smoke") {
+              weatherImg.src = "weather-app-img/images/smoke.png";
+            }
+          }
+          Lahore();
+        });
+      </script>
+    </div>
+  </body>
+</html>
